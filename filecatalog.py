@@ -55,7 +55,7 @@ def walkFiles(DEBUG,startdir,suffix,outputfilename):
                     if DEBUG:
                         print(str(hash) + " " + str(filesize) + " " + ffn)
                     f.closed
-                    count=count_1
+                    count=count+1
                 except:
                     print("  Unable to open " + ffn + "  ", sys.exc_info()[0], sys.exc_info()[1])
     json.dump(output, outf)
