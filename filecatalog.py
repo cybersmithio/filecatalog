@@ -19,10 +19,10 @@ from stat import *
 #https://docs.python.org/3.3/library/json.html#module-json
 import json
 
-def walkFiles(DEBUG,startdir,suffix,output):
+def walkFiles(DEBUG,startdir,suffix,outputfilename):
 
-
-    outf=open(output,"w")
+    count=0
+    outf=open(outputfilename,"w+")
     output=[]
     #Pull out all the directories and files in the current directory
     for root, dirs, files in os.walk(startdir):
@@ -52,12 +52,15 @@ def walkFiles(DEBUG,startdir,suffix,output):
                     with open(ffn) as f:
                         hash = hashlib.md5(f.read()).hexdigest()
                     output.append({"hash": hash, "size": filesize, "name": filename, "fullpath": ffn})
-                    print(str(hash) + " " + str(filesize) + " " + ffn)
+                    if DEBUG:
+                        print(str(hash) + " " + str(filesize) + " " + ffn)
                     f.closed
+                    count=count_1
                 except:
                     print("  Unable to open " + ffn + "  ", sys.exc_info()[0], sys.exc_info()[1])
     json.dump(output, outf)
     outf.closed
+    print("Total files found and catalogued: "+str(count))
 
 def compareFiles(DEBUG, file1, file2):
     print("Comparing these two files: "+str(file1)+" and "+str(file2))
@@ -93,7 +96,7 @@ def compareFiles(DEBUG, file1, file2):
     except:
         print("Unable to load json "+str(file2), sys.exc_info()[0], sys.exc_info()[1])
 
-
+    DIFF=False
     #Iterate through file 2 and see if the same files are in file 1
     for line in file1json:
         if DEBUG:
@@ -109,9 +112,7 @@ def compareFiles(DEBUG, file1, file2):
                 FOUND=True
         if not FOUND:
             print("File "+str(line['name'])+" is in "+str(file1)+" but not in "+str(file2))
-
-
-
+            DIFF=True
 
     #Iterate through file 2 and see if the same files are in file 1
     for line in file2json:
@@ -128,6 +129,10 @@ def compareFiles(DEBUG, file1, file2):
                 FOUND=True
         if not FOUND:
             print("File "+str(line['name'])+" is in "+str(file2)+" but not in "+str(file1))
+            DIFF=True
+
+    if not DIFF:
+        print("There were no differences found in the file catalogs.")
 
 
 
