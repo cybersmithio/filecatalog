@@ -156,9 +156,9 @@ def compareFiles(DEBUG, file1, file2):
     if not DIFF:
         print("There were no differences found in the file catalogs.")
     if missing1 > 0:
-        print("There are files missing from catalog 1")
+        print("Files missing from catalog 1: "+str(missing1))
     if missing2 > 0:
-        print("There are files missing from catalog 2")
+        print("Files missing from catalog 2: "+str(missing2))
 
 
     fp1.close()
