@@ -19,10 +19,17 @@ from stat import *
 #https://docs.python.org/3.3/library/json.html#module-json
 import json
 
+import re
+
 def walkFiles(DEBUG,startdir,suffix,outputfilename):
+    if outputfilename == "":
+        OUTPUTFILE=False
+    else:
+        OUTPUTFILE=True
 
     count=0
-    outf=open(outputfilename,"w+")
+    if OUTPUTFILE:
+        outf=open(outputfilename,"w+")
     output=[]
     #Pull out all the directories and files in the current directory
     for root, dirs, files in os.walk(startdir):
@@ -36,7 +43,7 @@ def walkFiles(DEBUG,startdir,suffix,outputfilename):
             if DEBUG:
                 print("  Files: " + str(i))
 
-            if i.endswith(suffix):
+            if len(re.findall(str(suffix)+"$", i, flags=re.IGNORECASE)) > 0:
 
                 #Create the full file name
                 if root.endswith("/"):
@@ -55,11 +62,18 @@ def walkFiles(DEBUG,startdir,suffix,outputfilename):
                     if DEBUG:
                         print(str(hash) + " " + str(filesize) + " " + ffn)
                     f.closed
+                    sys.stdout.write("\rFiles matching: "+str(count)+"    ")
+                    sys.stdout.flush()
                     count=count+1
                 except:
                     print("  Unable to open " + ffn + "  ", sys.exc_info()[0], sys.exc_info()[1])
-    json.dump(output, outf)
-    outf.closed
+    #Put out a new line after the "Files matching" status line
+    print("\n")
+    if OUTPUTFILE:
+        json.dump(output, outf)
+        outf.closed
+    else:
+        print(json.dumps(output))
     print("Total files found and catalogued: "+str(count))
 
 def compareFiles(DEBUG, file1, file2):
@@ -164,6 +178,7 @@ try:
 except:
     suffix=""
 
+
 try:
     if args.start[0] != "":
         startdir=args.start[0]
@@ -174,6 +189,13 @@ except:
 if args.debug:
     DEBUG=True
     print("Debugging is enabled.")
+
+try:
+    if args.output[0] != "":
+        outputfile=str(args.output[0])
+except:
+    outputfile=""
+
 
 
 try:
@@ -186,7 +208,7 @@ if COMPARE:
     compareFiles(DEBUG,str(args.compare[0]),str(args.compare[1]))
     exit(0)
 
-walkFiles(DEBUG,startdir,suffix,str(args.output[0]))
+walkFiles(DEBUG,startdir,suffix,outputfile)
 
 
 
