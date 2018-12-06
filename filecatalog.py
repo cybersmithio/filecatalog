@@ -131,7 +131,7 @@ def compareFiles(DEBUG, file1, file2):
         if not FOUND:
             print("File "+str(line['name'])+" is in "+str(file1)+" but not in "+str(file2))
             DIFF=True
-            missing1=missing1+1
+            missing2=missing2+1
 
     #Iterate through file 2 and see if the same files are in file 1
     for line in file2json:
@@ -149,7 +149,7 @@ def compareFiles(DEBUG, file1, file2):
         if not FOUND:
             print("File "+str(line['name'])+" is in "+str(file2)+" but not in "+str(file1))
             DIFF=True
-            missing2=missing2+1
+            missing1=missing1+1
 
 
     print("Summary of findings:")
