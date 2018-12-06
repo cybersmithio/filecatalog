@@ -62,9 +62,9 @@ def walkFiles(DEBUG,startdir,suffix,outputfilename):
                     if DEBUG:
                         print(str(hash) + " " + str(filesize) + " " + ffn)
                     f.closed
+                    count=count+1
                     sys.stdout.write("\rFiles matching: "+str(count)+"    ")
                     sys.stdout.flush()
-                    count=count+1
                 except:
                     print("  Unable to open " + ffn + "  ", sys.exc_info()[0], sys.exc_info()[1])
     #Put out a new line after the "Files matching" status line
@@ -111,6 +111,10 @@ def compareFiles(DEBUG, file1, file2):
         print("Unable to load json "+str(file2), sys.exc_info()[0], sys.exc_info()[1])
 
     DIFF=False
+    #The number of files missing from catalog 1
+    missing1=0
+    #The number of files missing from catalog 2
+    missing2=0
     #Iterate through file 2 and see if the same files are in file 1
     for line in file1json:
         if DEBUG:
@@ -127,6 +131,7 @@ def compareFiles(DEBUG, file1, file2):
         if not FOUND:
             print("File "+str(line['name'])+" is in "+str(file1)+" but not in "+str(file2))
             DIFF=True
+            missing1=missing1+1
 
     #Iterate through file 2 and see if the same files are in file 1
     for line in file2json:
@@ -144,10 +149,16 @@ def compareFiles(DEBUG, file1, file2):
         if not FOUND:
             print("File "+str(line['name'])+" is in "+str(file2)+" but not in "+str(file1))
             DIFF=True
+            missing2=missing2+1
 
+
+    print("Summary of findings:")
     if not DIFF:
         print("There were no differences found in the file catalogs.")
-
+    if missing1 > 0:
+        print("There are files missing from catalog 1")
+    if missing2 > 0:
+        print("There are files missing from catalog 2")
 
 
     fp1.close()
