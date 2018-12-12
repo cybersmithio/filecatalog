@@ -115,6 +115,12 @@ def compareFiles(DEBUG, file1, file2):
     missing1=0
     #The number of files missing from catalog 2
     missing2=0
+
+    #The size of the files missing from catalog 1 that are in catalog 2
+    sizeofmissing1=0
+    #The size of the files missing from catalog 2 that are in catalog 1
+    sizeofmissing2=0
+
     #Iterate through file 2 and see if the same files are in file 1
     for line in file1json:
         if DEBUG:
@@ -132,6 +138,7 @@ def compareFiles(DEBUG, file1, file2):
             print("File "+str(line['name'])+" is in "+str(file1)+" but not in "+str(file2))
             DIFF=True
             missing2=missing2+1
+            sizeofmissing2=sizeofmissing2+int(line['size'])
 
     #Iterate through file 2 and see if the same files are in file 1
     for line in file2json:
@@ -150,6 +157,7 @@ def compareFiles(DEBUG, file1, file2):
             print("File "+str(line['name'])+" is in "+str(file2)+" but not in "+str(file1))
             DIFF=True
             missing1=missing1+1
+            sizeofmissing1=sizeofmissing1+int(line['size'])
 
 
     print("Summary of findings:")
@@ -157,8 +165,10 @@ def compareFiles(DEBUG, file1, file2):
         print("There were no differences found in the file catalogs.")
     if missing1 > 0:
         print("Files missing from catalog 1: "+str(missing1))
+        print("The size in bytes of the files missing from catalog 1: "+str(sizeofmissing1))
     if missing2 > 0:
         print("Files missing from catalog 2: "+str(missing2))
+        print("The size in bytes of the files missing from catalog 2: "+str(sizeofmissing2))
 
 
     fp1.close()
@@ -178,6 +188,7 @@ parser.add_argument('--suffix',help="Only look at files that end in this. (i.e. 
 parser.add_argument('--start',help="The directory to start from, other than \"/\"",nargs=1,action="store")
 parser.add_argument('--compare',help="Take two output files and compare them",nargs=2,action="store")
 parser.add_argument('--output',help="The output JSON file",nargs=1,action="store")
+parser.add_argument('--finddups',help="Highlights any duplicate files, based on hash and file size",action="store_true")
 parser.add_argument('--debug',help="Turn on debugging",action="store_true")
 args=parser.parse_args()
 
